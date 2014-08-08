@@ -1,0 +1,14 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/knockout/3.1.0/knockout-min.js"></script>
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.7.0/moment.min.js"></script>
+    <script type="text/javascript" src="src/knockout.moment-binding.js"></script>
+    <script type="text/javascript" src="demo.js"></script>
+</head>
+<body>
+<input type="text" data-bind="moment: dateOfBirth, format: 'MMMM D, YYYY', invalid:'invalid', beforeParse:function(d) { if (d=='today') { return new Date() } else return d; }" />
+<div data-bind="text: dateOfBirth" />
+</body>
+</html>
