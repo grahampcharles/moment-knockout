@@ -2,6 +2,11 @@
 
     ko.bindingHandlers.moment = {
 
+        isDate: function (input) {
+            return Object.prototype.toString.call(input) === '[object Date]' ||
+                input instanceof Date;
+        },
+
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
 
             var allBindings = allBindingsAccessor();
@@ -21,11 +26,6 @@
             });
 
             ko.utils.registerEventHandler(element, 'keydown', function (e) {
-
-                function isDate(input) {
-                    return Object.prototype.toString.call(input) === '[object Date]' ||
-                        input instanceof Date;
-                }
 
                 var observable = valueAccessor();
 
@@ -53,7 +53,7 @@
                 }
 
                 if (change) {
-                    if (isDate(observable())) {
+                    if (ko.bindingHandlers.moment.isDate(observable())) {
                         observable(moment(observable()).add(change, unit).toDate());
                         $(element).select();
                         e.preventDefault();
@@ -64,11 +64,6 @@
         },
 
         update: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-
-            function isDate(input) {
-                return Object.prototype.toString.call(input) === '[object Date]' ||
-                    input instanceof Date;
-            }
 
             var value = valueAccessor();
             var allBindings = allBindingsAccessor();
@@ -83,7 +78,7 @@
             var parsePattern = allBindings.parsePattern || ['M/D/YY', 'M/D/YYYY', 'YYYY-M-D', 'M/D'];
 
             var dateMoment =
-                isDate(valueUnwrapped) ? moment(valueUnwrapped) :
+                ko.bindingHandlers.moment.isDate(valueUnwrapped) ? moment(valueUnwrapped) :
                     ((valueUnwrapped !== null && valueUnwrapped !== undefined && valueUnwrapped.length > 0) ?
                         moment(valueUnwrapped, parsePattern) :
                         moment.invalid());
