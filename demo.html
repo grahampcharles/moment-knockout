@@ -8,6 +8,14 @@
     <script type="text/javascript" src="demo.js"></script>
 </head>
 <body>
+<h3>Things to try:</h3>
+<ul>
+    <li>'1/20'</li>
+    <li>'today'</li>
+    <li>arrow keys</li>
+    <li>page up/page down</li>
+</ul>
+
 <input type="text" data-bind="moment: dateOfBirth, format: 'MMMM D, YYYY', invalid:'invalid', beforeParse:function(d) { if (d=='today') { return new Date() } else return d; }" />
 <div data-bind="text: dateOfBirth" />
 </body>
