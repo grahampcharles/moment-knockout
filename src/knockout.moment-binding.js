@@ -2,16 +2,39 @@
 
     ko.bindingHandlers.moment = {
 
+<<<<<<< HEAD
         isDate: function (input) {
             return Object.prototype.toString.call(input) === '[object Date]' ||
                 input instanceof Date;
+=======
+        /*
+         Keymapping: The keymap is an object in the form
+         { key1: { unit: 'day', change: -1 }, ... }
+         where
+         key: a keycode
+         unit: a unit name as recognized by moment.js (e.g. 'day') (default = 'day')
+         change: is a positive or negative value
+         */
+        defaultKeymap: {
+            '38': { 'change': -1 }, // up arrow
+            '37': { 'change': -1 }, // left arrow
+            '39': { 'change': 1 },  // right arrow
+            '40': { 'change': 1 },  // down arrow
+            '33': { 'change': -1, 'unit': 'month'}, // page up
+            '34': { 'change': -1, 'unit': 'month'} // page down
+>>>>>>> origin/update-keyboard-controls
         },
 
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
 
-            var allBindings = allBindingsAccessor();
-            var beforeParse = allBindings.beforeParse || $.noop();
+            var allBindings = allBindingsAccessor(),
+                beforeParse = allBindings.beforeParse || $.noop();
 
+            // get keymap, add it to the element
+            var keymap = $.extend({}, ko.bindingHandlers.moment.defaultKeymap, allBindings.keymap || {});
+            $(element).data('moment-keymap', keymap);
+
+            // register change event
             ko.utils.registerEventHandler(element, 'change', function () {
 
                 var observable = valueAccessor();
@@ -29,34 +52,38 @@
 
                 var observable = valueAccessor();
 
-                var change = 0,
-                    unit = 'day';
-                switch (e.which) {
-                    case 38: // up
-                    case 37: // left
-                        change = -1;
-                        break;
-                    case 39: // right arrow
-                    case 40: // down arrow
-                        change = 1;
-                        break;
-                    case 33: // page up
-                        change = -1;
-                        unit = 'month';
-                        break;
-                    case 34: // page up
-                        change = 1;
-                        unit = 'month';
-                        break;
-                    default:
-                        break;
-                }
+                // get and handle keymap
+                var keymap = $(element).data('moment-keymap');
 
+                if (keymap) {
+                    if (keymap.hasOwnProperty(e.which.toString())) {
+                        var keymapping = keymap[e.which.toString()] || {},
+                            change = keymapping.change || 0,
+                            unit = keymapping.unit || "day";
+
+                        // handle keystroke
+                        if (change) {
+                            if (isDate(observable())) {
+                                observable(moment(observable()).add(change, unit).toDate());
+                            } else {
+                                // default to today
+                                observable(new Date());
+                            }
+
+                            // select all text and prevent default key action
+                            $(element).select();
+                            e.preventDefault();
+
+                        }
+
+<<<<<<< HEAD
                 if (change) {
                     if (ko.bindingHandlers.moment.isDate(observable())) {
                         observable(moment(observable()).add(change, unit).toDate());
                         $(element).select();
                         e.preventDefault();
+=======
+>>>>>>> origin/update-keyboard-controls
                     }
                 }
 

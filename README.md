@@ -37,9 +37,29 @@ If the value cannot be parsed into a valid date, the control will display the in
 - **format** (default `'MM/DD/YYYY'`): A format string to use for display.
 - **parsePattern** (default `['M/D/YY', 'M/D/YYYY', 'YYYY-M-D', 'M/D']`): A format string (or array of format strings) to use for transforming input into a date.
 - **invalid** (default `'-'`): A value to display if the date is invalid.
-= **beforeParse** (default: `$.noop`): A function that takes text input and returns either a valid Date, an altered string to be parsed, or `undefined`. For example, to parse the string 'today', you could use the example above.
+- **beforeParse** (default: `$.noop`): A function that takes text input and returns either a valid Date, an altered string to be parsed, or `undefined`. For example, to parse the string 'today', you could use the example above.
+- **keymap**: (default: *up = -1 day, pageup = -1 month, etc.*) An object that maps keycodes to date-changing behavior. See "Keymapping," below. 
+ 
+ 
+ 
+### Keymapping ###
 
+The keymap is an object in the form:
 
+    { key1: { unit: 'day', change: -1 }, ... }
+
+where
+     
+* key: a keycode
+* unit: a unit name as recognized by moment.js (e.g. 'day') (default = 'day')
+* change: is a positive or negative value
+
+The default mapping is:
+
+* up, left: subtract one day
+* right, down: add one day
+* page up: subtract one month
+* page down: add one month  
 
 
 
