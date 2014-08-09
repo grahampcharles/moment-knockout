@@ -2,19 +2,11 @@
 
     ko.bindingHandlers.moment = {
 
-<<<<<<< HEAD
         isDate: function (input) {
             return Object.prototype.toString.call(input) === '[object Date]' ||
                 input instanceof Date;
-=======
-        /*
-         Keymapping: The keymap is an object in the form
-         { key1: { unit: 'day', change: -1 }, ... }
-         where
-         key: a keycode
-         unit: a unit name as recognized by moment.js (e.g. 'day') (default = 'day')
-         change: is a positive or negative value
-         */
+        },
+
         defaultKeymap: {
             '38': { 'change': -1 }, // up arrow
             '37': { 'change': -1 }, // left arrow
@@ -22,7 +14,6 @@
             '40': { 'change': 1 },  // down arrow
             '33': { 'change': -1, 'unit': 'month'}, // page up
             '34': { 'change': -1, 'unit': 'month'} // page down
->>>>>>> origin/update-keyboard-controls
         },
 
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
@@ -73,21 +64,10 @@
                             // select all text and prevent default key action
                             $(element).select();
                             e.preventDefault();
-
                         }
-
-<<<<<<< HEAD
-                if (change) {
-                    if (ko.bindingHandlers.moment.isDate(observable())) {
-                        observable(moment(observable()).add(change, unit).toDate());
-                        $(element).select();
-                        e.preventDefault();
-=======
->>>>>>> origin/update-keyboard-controls
                     }
                 }
-
-            });
+            })
         },
 
         update: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
