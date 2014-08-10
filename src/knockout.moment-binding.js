@@ -7,23 +7,34 @@
                 input instanceof Date;
         },
 
-        defaultKeymap: {
+        defaults: {
+            keyMap: {
             '38': { 'change': -1 }, // up arrow
             '37': { 'change': -1 }, // left arrow
             '39': { 'change': 1 },  // right arrow
             '40': { 'change': 1 },  // down arrow
             '33': { 'change': -1, 'unit': 'month'}, // page up
-            '34': { 'change': -1, 'unit': 'month'} // page down
+                '34': { 'change': 1, 'unit': 'month'} // page down
+            },
+            beforeParse: undefined,
+            afterParse: undefined,
+            invalid: '-',
+            format: 'MM/DD/YYYY',
+            parsePattern: ['M/D/YY', 'M/D/YYYY', 'YYYY-M-D', 'M/D'],
+            unit: "day"
         },
+
+        keyMapDataKey: 'moment-keymap',
 
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
 
             var allBindings = allBindingsAccessor(),
-                beforeParse = allBindings.beforeParse || $.noop();
+                beforeParse = allBindings.beforeParse || ko.bindingHandlers.moment.defaults.beforeParse,
+                unitDefault = allBindings.unit || ko.bindingHandlers.moment.defaults.unit;
 
-            // get keymap, add it to the element
-            var keymap = $.extend({}, ko.bindingHandlers.moment.defaultKeymap, allBindings.keymap || {});
-            $(element).data('moment-keymap', keymap);
+            // get keyMap, add it to the element
+            var keyMap = $.extend({}, ko.bindingHandlers.moment.defaults.keyMap, allBindings.keyMap || {});
+            $(element).data(ko.bindingHandlers.moment.keyMapDataKey, keyMap);
 
             // register change event
             ko.utils.registerEventHandler(element, 'change', function () {
@@ -43,18 +54,18 @@
 
                 var observable = valueAccessor();
 
-                // get and handle keymap
-                var keymap = $(element).data('moment-keymap');
+                // get and handle keyMap
+                var keyMap = $(element).data(ko.bindingHandlers.moment.keyMapDataKey);
 
-                if (keymap) {
-                    if (keymap.hasOwnProperty(e.which.toString())) {
-                        var keymapping = keymap[e.which.toString()] || {},
-                            change = keymapping.change || 0,
-                            unit = keymapping.unit || "day";
+                if (keyMap) {
+                    if (keyMap.hasOwnProperty(e.which.toString())) {
+                        var keyMapping = keyMap[e.which.toString()] || {},
+                            change = keyMapping.change || 0,
+                            unit = keyMapping.unit || unitDefault || "day";
 
                         // handle keystroke
                         if (change) {
-                            if (isDate(observable())) {
+                            if (ko.bindingHandlers.moment.isDate(observable())) {
                                 observable(moment(observable()).add(change, unit).toDate());
                             } else {
                                 // default to today
@@ -72,17 +83,18 @@
 
         update: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
 
-            var value = valueAccessor();
-            var allBindings = allBindingsAccessor();
-            var valueUnwrapped = ko.utils.unwrapObservable(value);
+            var value = valueAccessor(),
+                allBindings = allBindingsAccessor(),
+                valueUnwrapped = ko.utils.unwrapObservable(value),
+                afterParse = allBindings.afterParse || ko.bindingHandlers.moment.defaults.afterParse;
             var keyName = $.map(bindingContext.$data, function (v, k) {
                 return (k)
             })[0];
 
             // Date formats: http://momentjs.com/docs/#/displaying/format/
-            var pattern = allBindings.format || 'MM/DD/YYYY';
-            var invalidString = allBindings.invalid || '-';
-            var parsePattern = allBindings.parsePattern || ['M/D/YY', 'M/D/YYYY', 'YYYY-M-D', 'M/D'];
+            var pattern = allBindings.format || ko.bindingHandlers.moment.defaults.format;
+            var invalidString = allBindings.invalid || ko.bindingHandlers.moment.defaults.invalid;
+            var parsePattern = allBindings.parsePattern || ko.bindingHandlers.moment.defaults.parsePattern;
 
             var dateMoment =
                 ko.bindingHandlers.moment.isDate(valueUnwrapped) ? moment(valueUnwrapped) :
@@ -90,12 +102,29 @@
                         moment(valueUnwrapped, parsePattern) :
                         moment.invalid());
 
+            // raise afterParse callback
+            if ($.isFunction(afterParse)) {
+                var parseValue = afterParse(dateMoment);
+
+                if (moment.isMoment(parseValue)) {
+                    dateMoment = parseValue;
+                } else if (ko.bindingHandlers.moment.isDate(parseValue)) {
+                    dateMoment = moment(parseValue);
+                } else if (!parseValue) {
+                    dateMoment = moment.invalid();
+                }
+                // otherwise (e.g., when return true), the parsed dateMoment is not altered
+            }
+
+            // get the updated value
+            var newValue = dateMoment.isValid() ?
+                dateMoment.toDate() : null;
+
+
+            // format string for input box
             var output = dateMoment.isValid() ?
                 dateMoment.format(pattern) :
                 invalidString;
-
-            var newValue = dateMoment.isValid() ?
-                dateMoment.toDate() : null;
 
             if ($(element).is("input") === true) {
                 $(element).val(output);
@@ -103,7 +132,8 @@
                 $(element).text(output);
             }
 
-            bindingContext.$rawData[keyName](newValue)
+            // update value
+            allBindingsAccessor().moment(newValue);
         }
     };
 }());

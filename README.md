@@ -37,7 +37,8 @@ If the value cannot be parsed into a valid date, the control will display the in
 - **format** (default `'MM/DD/YYYY'`): A format string to use for display.
 - **parsePattern** (default `['M/D/YY', 'M/D/YYYY', 'YYYY-M-D', 'M/D']`): A format string (or array of format strings) to use for transforming input into a date.
 - **invalid** (default `'-'`): A value to display if the date is invalid.
-- **beforeParse** (default: `$.noop`): A function that takes text input and returns either a valid Date, an altered string to be parsed, or `undefined`. For example, to parse the string 'today', you could use the example above.
+- **beforeParse** (default: `undefined`): A function that takes text input and returns either a valid Date, an altered string to be parsed, or `undefined`. For example, to parse the string 'today', you could use the example above.
+- **afterParse** (default: `undefined`): A function that takes date (or `undefined`) input and returns either `true` (to allow the input), `false` or `undefined` (to disallow the input, as for an illegal value), or a different Date object. For example, to require a weekday entry, this function might return the previous day for Saturday dates, the next day for Sunday dates.
 - **keymap**: (default: *up = -1 day, pageup = -1 month, etc.*) An object that maps keycodes to date-changing behavior. See "Keymapping," below. 
  
  

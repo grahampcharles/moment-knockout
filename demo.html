@@ -6,8 +6,15 @@
     <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.7.0/moment.min.js"></script>
     <script type="text/javascript" src="src/knockout.moment-binding.js"></script>
     <script type="text/javascript" src="demo.js"></script>
+    <style>
+        input {
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
+<h2>Normal</h2>
+
 <h3>Things to try:</h3>
 <ul>
     <li>'1/20'</li>
@@ -17,6 +24,21 @@
 </ul>
 
 <input type="text" data-bind="moment: dateOfBirth, format: 'MMMM D, YYYY', invalid:'invalid', beforeParse:function(d) { if (d=='today') { return new Date() } else return d; }" />
-<div data-bind="text: dateOfBirth" />
+
+<div data-bind="text: dateOfBirth"></div>
+
+<h2>Month-Style</h2>
+
+<h3>Things to try:</h3>
+<ul>
+    <li>'1/1999'</li>
+    <li>arrow keys</li>
+    <li>page up/page down</li>
+</ul>
+<input type="text"
+       data-bind="moment: dateMonth, format: 'MMMM YYYY', unit:'month', parsePattern: ['M/YY', 'M/YYYY', 'YYYY-M' ], afterParse: function(d) { return moment(d).isValid() ? moment(d).startOf('month') : new Date(); }"/>
+
+<div data-bind="text: dateMonth"></div>
+
 </body>
 </html>
