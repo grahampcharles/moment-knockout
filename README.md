@@ -31,7 +31,7 @@ If the value cannot be parsed into a valid date, the control will display the in
 - **parsePattern** (default `['M/D/YY', 'M/D/YYYY', 'YYYY-M-D', 'M/D']`): A format string (or array of format strings) to use for transforming input into a date.
 - **invalid** (default `'-'`): A value to display if the date is invalid.
 - **beforeParse** (default: `undefined`): A function that takes text input and returns either a valid Date, an altered string to be parsed, or `undefined`. For example, to parse the string 'today', you could use Example 1, below.
-- **afterParse** (default: `undefined`): A function that takes date (or `undefined`) input and returns either `true` (to allow the input), `false` or `undefined` (to disallow the input, as for an illegal value), or a different Date object. For example, to require a weekday entry, this function might return the previous day for Saturday dates, the next day for Sunday dates.
+- **afterParse** (default: `undefined`): A function that takes date (or `undefined`) input and returns either `true` (to allow the input), `false` or `undefined` (to disallow the input, as for an illegal value), or a different Date (or `moment`) object. For example, to require a weekday entry, this function might return the previous day for Saturday dates, the next day for Sunday dates.
 - **unit** (default: `'day'`): A value for the default unit used in keymapping; change this to `'month'`, for example, and the arrow keys will advance one month instead of one day by default. 
 - **keymap**: (default: *up = -1 day, pageup = -1 month, etc.*) An object that maps keycodes to date-changing behavior. See "Keymapping," below. 
  
@@ -78,5 +78,5 @@ Allows month/year entry and U.S.-style formatting. If an invalid date is entered
         parsePattern: ['M/YY', 'M/YYYY', 'YYYY-M' ], afterParse: function(d) 
            { return moment(d).isValid() ? 
                moment(d).startOf('month') 
-               : new Date(); }
+               : moment(d).startOf('month'); }
     "/>

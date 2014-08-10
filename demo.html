@@ -36,7 +36,7 @@
     <li>page up/page down</li>
 </ul>
 <input type="text"
-       data-bind="moment: dateMonth, format: 'MMMM YYYY', unit:'month', parsePattern: ['M/YY', 'M/YYYY', 'YYYY-M' ], afterParse: function(d) { return moment(d).isValid() ? moment(d).startOf('month') : new Date(); }"/>
+       data-bind="moment: dateMonth, format: 'MMMM YYYY', unit:'month', parsePattern: ['M/YY', 'M/YYYY', 'YYYY-M' ], afterParse: function(d) { return moment(d).isValid() ? moment(d).startOf('month') : new moment().startOf('month'); }"/>
 
 <div data-bind="text: dateMonth"></div>
 
