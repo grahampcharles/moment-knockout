@@ -93,7 +93,7 @@
 
             // Date formats: http://momentjs.com/docs/#/displaying/format/
             var pattern = allBindings.format || ko.bindingHandlers.moment.defaults.format;
-            var invalidString = allBindings.invalid || ko.bindingHandlers.moment.defaults.invalid;
+            var invalidString = allBindings.invalid == undefined ? ko.bindingHandlers.moment.defaults.invalid : allBindings.invalid;
             var parsePattern = allBindings.parsePattern || ko.bindingHandlers.moment.defaults.parsePattern;
 
             var dateMoment =
