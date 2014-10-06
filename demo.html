@@ -27,6 +27,17 @@
 
 <div data-bind="text: dateOfBirth"></div>
 
+<h2>Skipping Weekends</h2>
+
+<h3>Things to try:</h3>
+<ul>
+    <li>arrow keys (Sat/Sun will be skipped)</li>
+</ul>
+
+<input type="text" data-bind="moment: dateNumber2, format: 'MMMM D, YYYY', keyPressed: excludeWeekends " />
+<div data-bind="text: dateNumber2"></div>
+
+
 <h2>Month-Style</h2>
 
 <h3>Things to try:</h3>
@@ -39,6 +50,9 @@
        data-bind="moment: dateMonth, format: 'MMMM YYYY', unit:'month', parsePattern: ['M/YY', 'M/YYYY', 'YYYY-M' ], afterParse: function(d) { return moment(d).isValid() ? moment(d).startOf('month') : new moment().startOf('month'); }"/>
 
 <div data-bind="text: dateMonth"></div>
+
+
+
 
 </body>
 </html>

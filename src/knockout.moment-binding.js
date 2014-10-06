@@ -14,10 +14,18 @@
             '39': { 'change': 1 },  // right arrow
             '40': { 'change': 1 },  // down arrow
             '33': { 'change': -1, 'unit': 'month'}, // page up
-                '34': { 'change': 1, 'unit': 'month'} // page down
+            '34': { 'change': 1, 'unit': 'month'} // page down
             },
             beforeParse: undefined,
             afterParse: undefined,
+            keyPressed: function( oldValue, change, unit, keycode) {
+                // default key handler: add requested change and unit
+                if (!ko.bindingHandlers.moment.isDate(oldValue)) {
+                    return moment(); // default to today
+                } else {
+                    return moment(oldValue).add(change, unit).toDate();
+                }
+            },
             invalid: '-',
             format: 'MM/DD/YYYY',
             parsePattern: ['M/D/YY', 'M/D/YYYY', 'YYYY-M-D', 'M/D'],
@@ -29,6 +37,7 @@
         init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
 
             var allBindings = allBindingsAccessor(),
+                keyPressed = allBindings.keyPressed || ko.bindingHandlers.moment.defaults.keyPressed,
                 beforeParse = allBindings.beforeParse || ko.bindingHandlers.moment.defaults.beforeParse,
                 unitDefault = allBindings.unit || ko.bindingHandlers.moment.defaults.unit;
 
@@ -65,8 +74,20 @@
 
                         // handle keystroke
                         if (change) {
-                            if (ko.bindingHandlers.moment.isDate(observable())) {
-                                observable(moment(observable()).add(change, unit).toDate());
+                            // user-defined date change handler
+                            var newValue = observable();
+
+                            if ($.isFunction(keyPressed)) {
+                                newValue = keyPressed(observable(), change, unit, e.which);
+
+                                if (moment.isMoment(newValue)) {
+                                    newValue = newValue.toDate();
+                                }
+                            };
+
+                            // set updated value
+                            if (ko.bindingHandlers.moment.isDate(newValue)) {
+                                observable(newValue);
                             } else {
                                 // default to today
                                 observable(new Date());

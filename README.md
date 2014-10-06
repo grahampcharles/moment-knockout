@@ -32,6 +32,7 @@ If the value cannot be parsed into a valid date, the control will display the in
 - **invalid** (default `'-'`): A value to display if the date is invalid.
 - **beforeParse** (default: `undefined`): A function that takes text input and returns either a valid Date, an altered string to be parsed, or `undefined`. For example, to parse the string 'today', you could use Example 1, below.
 - **afterParse** (default: `undefined`): A function that takes date (or `undefined`) input and returns either `true` (to allow the input), `false` or `undefined` (to disallow the input, as for an illegal value), or a different Date (or `moment`) object. For example, to require a weekday entry, this function might return the previous day for Saturday dates, the next day for Sunday dates.
+- **keyPressed** (default: `undefined`): A function that translates a change amount and units into a new date. It passes parameters `currentdate` (moment), `change` (int), `unit` (string), and `keycode` (int), and expects a date value in return. If nothing is returned, then default changes are made; if a date or valid moment is returned, that will be used as the new value. (You could use this event to skip weekends when using the arrow keys, for example.) 
 - **unit** (default: `'day'`): A value for the default unit used in keymapping; change this to `'month'`, for example, and the arrow keys will advance one month instead of one day by default. 
 - **keymap**: (default: *up = -1 day, pageup = -1 month, etc.*) An object that maps keycodes to date-changing behavior. See "Keymapping," below. 
  
@@ -67,6 +68,20 @@ The default mapping is:
 			else return d; }
      "  />
 
+### Exclude weekends on key press ###
+        <input type="text" data-bind="moment: dateOfBirth, 
+        format: 'MMMM D, YYYY', 
+		keyPressed: function( oldValue, change, unit, keycode) {
+            var newValue = moment(oldValue);
+            if (!newValue.isValid()) { newValue = moment(); } else {
+                newValue = newValue.add(change, unit);
+                while (newValue.day() === 0 || newValue.day() === 6) {
+                    newValue.add (Math.sign(change) || 1, "day");
+                }
+            }
+            return newValue;
+		}        
+		" />
 
 ### Month-style###
 Allows month/year entry and U.S.-style formatting. If an invalid date is entered, defaults to the current month. The value returned to the view model is always the 1st of the month.
